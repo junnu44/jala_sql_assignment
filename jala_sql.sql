@@ -1,4 +1,3 @@
-
 --1.	Display snum,sname,city and comm of all salespeople.
 SELECT SNUM, SNAME, CITY, COMM FROM Salespeople;
 --2.	Display all snum without duplicates from all orders.
@@ -60,4 +59,24 @@ SELECT 'For the city ' || CITY || ', the highest rating is : ' || MAX(RATING) AS
 SELECT ODATE, SUM(AMT) AS total_amount FROM Orders GROUP BY ODATE ORDER BY total_amount DESC;
 --30.	All combinations of salespeople and customers who shared a city. (ie same city).
 SELECT s.SNAME AS salesperson, c.CNAME AS customer, s.CITY FROM Salespeople s JOIN Cust c ON s.CITY = c.CITY ORDER BY s.CITY, s.SNAME, c.CNAME;
- 
+--31.	Name of all customers matched with the salespeople serving them.
+SELECT c.CNAME AS customer, s.SNAME AS salesperson FROM Cust c JOIN Salespeople s ON c.SNUM = s.SNUM;
+--32.	List each order number followed by the name of the customer who made the order.
+SELECT o.ONUM AS order_no, c.CNAME AS customer FROM Orders o JOIN Cust c ON o.CNUM = c.CNUM;
+--33.	Names of salesperson and customer for each order after the order number.
+SELECT o.ONUM AS order_no, s.SNAME AS salesperson, c.CNAME AS customer FROM Orders o JOIN Cust c ON o.CNUM = c.CNUM JOIN Salespeople s ON o.SNUM = s.SNUM;
+--34.	Produce all customer serviced by salespeople with a commission above 12%.
+SELECT c.* FROM Cust c JOIN Salespeople s ON c.SNUM = s.SNUM WHERE s.COMM > 0.12;
+--Q35: Calculate the amount of the salesperson’s commission on each order with a rating above 100
+SELECT o.ONUM, o.SNUM, o.AMT, c.RATING,
+       o.AMT * s.COMM AS commission_amount FROM Orders o JOIN Cust c ON o.CNUM = c.CNUM JOIN Salespeople s ON o.SNUM = s.SNUM WHERE c.RATING > 100;
+--36.	Find all pairs of customers having the same rating.
+SELECT c1.CNAME AS customer1, c2.CNAME AS customer2, c1.RATING FROM Cust c1 JOIN Cust c2 ON c1.RATING = c2.RATING WHERE c1.CNUM <> c2.CNUM;
+--37.	Find all pairs of customers having the same rating, each pair coming once only.
+SELECT c1.CNAME AS customer1, c2.CNAME AS customer2, c1.RATING FROM Cust c1 JOIN Cust c2 ON c1.RATING = c2.RATING WHERE c1.CNUM < c2.CNUM;
+--38.	Policy is to assign three salesperson to each customers. Display all such combinations.
+SELECT c.CNAME, s.SNAME FROM Cust c, Salespeople s ORDER BY c.CNAME, s.SNAME;
+--39.	Display all customers located in cities where salesman serres has customer.
+SELECT * FROM Cust WHERE CITY IN (SELECT CITY FROM Cust WHERE SNUM = (SELECT SNUM FROM Salespeople WHERE SNAME = 'Serres'));
+--40.	Find all pairs of customers served by single salesperson.
+SELECT c1.CNAME AS customer1, c2.CNAME AS customer2, c1.SNUM FROM Cust c1 JOIN Cust c2 ON c1.SNUM = c2.SNUM WHERE c1.CNUM < c2.CNUM;
